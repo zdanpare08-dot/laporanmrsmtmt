@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Laporan OPR - MRSM Tun Mustapha</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root {
+            --mrsm-blue: #003366;
+            --mrsm-gold: #c5a059;
+            --bg-light: #f4f7f6;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-light);
+            margin: 0;
+            padding: 20px;
+            color: #333;
+        }
+
+        /* Container Utama Web App */
+        .app-container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 40px;
+            border-top: 8px solid var(--mrsm-blue);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+
+        .web-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .web-header img {
+            width: 120px;
+            margin-bottom: 15px;
+        }
+
+        .web-header h1 {
+            margin: 0;
+            color: var(--mrsm-blue);
+            font-size: 24px;
+            letter-spacing: 1px;
+        }
+
+        /* Susunan Borang */
+        .grid-form {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .full-width { grid-column: span 2; }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            color: var(--mrsm-blue);
+        }
+
+        input, textarea {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 15px;
+            background: #fafafa;
+        }
+
+        input:focus, textarea:focus {
+            border-color: var(--mrsm-blue);
+            outline: none;
+            background: white;
+            box-shadow: 0 0 5px rgba(0,51,102,0.1);
+        }
+
+        /* Butang Jana */
+        .btn-container {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .btn-generate {
+            background: var(--mrsm-blue);
+            color: white;
+            padding: 18px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+            width: 100%;
+            max-width: 300px;
+        }
+
+        .btn-generate:hover {
+            background: #002244;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* --- STYLES KHAS UNTUK PDF (JADUAL KERAJAAN) --- */
+        #pdf-content {
+            display: none; /* Sembunyi dalam browser */
+            background: white;
+            color: black;
+        }
+
+        .pdf-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        .pdf-table th, .pdf-table td {
+            border: 1px solid black;
+            padding: 8px 12px;
+            font-size: 11pt;
+            vertical-align: top;
+        }
+
+        .pdf-table th {
+            background-color: #eee;
+            width: 30%;
+            text-align: left;
+        }
+
+        .pdf-grid-photos {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .pdf-grid-photos img {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            border: 1px solid black;
+        }
+
+        .pdf-footer-sig {
+            margin-top: 50px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .sig-space {
+            width: 250px;
+            text-align: left;
+        }
+
+        .line {
+            margin-top: 60px;
+            border-bottom: 1px solid black;
+            width: 100%;
+        }
+
+        @media (max-width: 600px) {
+            .grid-form { grid-template-columns: 1fr; }
+            .full-width { grid-column: span 1; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <div class="web-header">
+        <img src="https://i1.wp.com/1.bp.blogspot.com/-zwf1nLbecI8/YC9ejOFTzqI/AAAAAAAAd4Y/LzACuJk5AG4HMV2zS6qD37SsOAVV-4esQCNcBGAsYHQ/s765/MRSM.png" alt="Logo MRSM">
+        <h1>SISTEM PELAPORAN OPR</h1>
+        <p>MRSM TUN MUSTAPHA, TAWAU</p>
+    </div>
+
+    <div class="grid-form">
+        <div class="form-group full-width">
+            <label>Nama Program / Aktiviti</label>
+            <input type="text" id="in_nama" placeholder="Cth: Program Motivasi Kecemerlangan">
+        </div>
+        <div class="form-group">
+            <label>Anjuran</label>
+            <input type="text" id="in_anjuran" placeholder="Cth: Unit Bimbingan & Kaunseling">
+        </div>
+        <div class="form-group">
+            <label>Tarikh</label>
+            <input type="date" id="in_tarikh">
+        </div>
+        <div class="form-group">
+            <label>Masa</label>
+            <input type="text" id="in_masa" placeholder="Cth: 8:00 Pagi - 12:00 Tengahari">
+        </div>
+        <div class="form-group">
+            <label>Tempat</label>
+            <input type="text" id="in_tempat" placeholder="Cth: Bilik Seminar">
+        </div>
+        <div class="form-group full-width">
+            <label>Sasaran</label>
+            <input type="text" id="in_sasaran" placeholder="Cth: Semua Pelajar Tingkatan 5">
+        </div>
+        <div class="form-group full-width">
+            <label>Objektif Program</label>
+            <textarea id="in_objektif" placeholder="Nyatakan objektif program..."></textarea>
+        </div>
+        <div class="form-group full-width">
+            <label>Ringkasan Aktiviti</label>
+            <textarea id="in_aktiviti" style="height: 120px;" placeholder="Terangkan jalannya aktiviti..."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Kekuatan</label>
+            <textarea id="in_kekuatan"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Kelemahan</label>
+            <textarea id="in_kelemahan"></textarea>
+        </div>
+        <div class="form-group full-width">
+            <label>Nama Penyelaras (Untuk Tandatangan)</label>
+            <input type="text" id="in_penyelaras" placeholder="Nama Penuh Penyelaras">
+        </div>
+        <div class="form-group full-width">
+            <label>Muat Naik Gambar (Maksimum 6 keping)</label>
+            <input type="file" id="in_gambar" accept="image/*" multiple>
+        </div>
+    </div>
+
+    <div class="btn-container">
+        <button class="btn-generate" onclick="janaLaporan()">JANA PDF SEKARANG</button>
+    </div>
+</div>
+
+<div id="pdf-content">
+    <div style="text-align: center; border-bottom: 2px solid #000; padding-bottom: 10px;">
+        <img src="https://i1.wp.com/1.bp.blogspot.com/-zwf1nLbecI8/YC9ejOFTzqI/AAAAAAAAd4Y/LzACuJk5AG4HMV2zS6qD37SsOAVV-4esQCNcBGAsYHQ/s765/MRSM.png" style="width: 80px;">
+        <h2 style="margin: 5px 0;">LAPORAN OPR MRSM TUN MUSTAPHA TAWAU</h2>
+    </div>
+
+    <table class="pdf-table">
+        <tr><th>NAMA PROGRAM</th><td id="out_nama"></td></tr>
+        <tr><th>ANJURAN</th><td id="out_anjuran"></td></tr>
+        <tr><th>TARIKH / MASA</th><td><span id="out_tarikh"></span> / <span id="out_masa"></span></td></tr>
+        <tr><th>TEMPAT</th><td id="out_tempat"></td></tr>
+        <tr><th>SASARAN</th><td id="out_sasaran"></td></tr>
+        <tr><th>OBJEKTIF</th><td id="out_objektif"></td></tr>
+        <tr><th>AKTIVITI</th><td id="out_aktiviti"></td></tr>
+        <tr><th>KEKUATAN</th><td id="out_kekuatan"></td></tr>
+        <tr><th>KELEMAHAN</th><td id="out_kelemahan"></td></tr>
+    </table>
+
+    <div class="pdf-grid-photos" id="out_gambar"></div>
+
+    <div class="pdf-footer-sig">
+        <div class="sig-space">
+            <p>Disediakan oleh:</p>
+            <div class="line"></div>
+            <p><strong><span id="out_penyelaras"></span></strong><br>Penyelaras Program</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function janaLaporan() {
+        // 1. Pindahkan Data ke Template PDF
+        const mapping = {
+            'in_nama': 'out_nama',
+            'in_anjuran': 'out_anjuran',
+            'in_tarikh': 'out_tarikh',
+            'in_masa': 'out_masa',
+            'in_tempat': 'out_tempat',
+            'in_sasaran': 'out_sasaran',
+            'in_objektif': 'out_objektif',
+            'in_aktiviti': 'out_aktiviti',
+            'in_kekuatan': 'out_kekuatan',
+            'in_kelemahan': 'out_kelemahan',
+            'in_penyelaras': 'out_penyelaras'
+        };
+
+        for (let key in mapping) {
+            document.getElementById(mapping[key]).innerText = document.getElementById(key).value;
+        }
+
+        // 2. Proses Gambar
+        const photoDiv = document.getElementById('out_gambar');
+        photoDiv.innerHTML = '';
+        const files = document.getElementById('in_gambar').files;
+
+        if (files.length > 0) {
+            for (let i = 0; i < Math.min(files.length, 6); i++) {
+                const reader = new FileReader();
+                const imgPromise = new Promise(resolve => {
+                    reader.onload = e => resolve(e.target.result);
+                });
+                reader.readAsDataURL(files[i]);
+                const src = await imgPromise;
+                const imgTag = document.createElement('img');
+                imgTag.src = src;
+                photoDiv.appendChild(imgTag);
+            }
+        }
+
+        // 3. Jana PDF
+        const element = document.getElementById('pdf-content');
+        element.style.display = 'block';
+
+        const opsi = {
+            margin: 10,
+            filename: 'Laporan_OPR_' + document.getElementById('in_nama').value + '.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opsi).from(element).save().then(() => {
+            element.style.display = 'none';
+        });
+    }
+</script>
+
+</body>
+</html>
